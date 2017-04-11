@@ -1,0 +1,33 @@
+{
+  "name": "ansi-marks",
+  "version": "0.0.1",
+  "description": "two way conversion between human friendly text formatting marks and ansi escape codes",
+  "author": "Trevor Cowley tcowley@gmail.com",
+  "license": "ISC",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape './test/**/*.js' | tap-difflet",
+    "preversion": "npm test",
+    "version": "",
+    "postversion": "git push && git push --tags"
+  },
+  "repository": "tcowley/ansi-marks",
+  "bugs": {
+    "url": "https://github.com/tcowley/ansi-marks/issues"
+  },
+  "keywords": [
+    "cli",
+    "ascii",
+    "ansi",
+    "string",
+    "markup"
+  ],
+  "devDependencies": {
+    "blue-tape": "^0.1.10",
+    "glob": "^5.0.14",
+    "tap-difflet": "^0.3.0",
+    "tap-min": "^1.0.0",
+    "tape": "^4.0.3",
+    "tape-catch": "^1.0.4"
+  }
+}
