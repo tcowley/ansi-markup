@@ -1,184 +1,149 @@
-# ascii-string-split  ![Build Status](https://travis-ci.org/tcowley/ascii-string-split.svg?branch=master)
+# ansi-markup  ![Build Status](https://travis-ci.org/tcowley/ansi-markup.svg?branch=master)
 
 ## Description
 
-Using Node.js, split an ASCII string into shorter strings of a given length. The library uses a simple algorithm to split longer words as necessary so that they fit. 
+Convert easy to read text formatting markup to [ANSI SGR escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code). Makes it easy to embed rich text formatting and color inside text that will be displayed in the terminal.
 
-This is a very basic library that helps with simple line wrapping inside JavaScript CLI apps. You pass in a string, and it returns an array of strings, none of which is longer than the provided length.
+For example: 
 
-Please note that the library won't split multi-byte strings nicely, but it will split lots of non-ASCII characters just fine.
+"this text is {blue}blue{/blue} and this is {bold}bold{/bold}."
+
+Will look like this on the cli:
+
+> ![formatted text](./media/formatted-text.png) 
+
 
 ## Installation
 
 Add this library to your current Node.js project using npm:
 
 ```
-npm install --save ascii-string-split
+npm install --save ansi-markup
 ```
 
 Or, checkout the source:
 
 ```
-git clone https://github.com/tcowley/ascii-string-split
+git clone https://github.com/tcowley/ansi-markup
 ```
 
+## Basic Usage
 
-## Code Examples
+```javascript
+# sample.js
 
-### Basic Usage
-
-The basic usage is to allow word splitting on all words larger than 6 letters, or on any word larger than the desired string length.
-
-```JavaScript
-var asciiStringSplit = require('ascii-string-split');
-
-var myString = 'a very very long string full of words composed entirely of ASCII characters.';
-var strLength = 21;
-
-console.log(asciiStringSplit(myString, strLength));
+var ansiMarkup = require('ansi-markup');
+var input = "this text is {blue}blue{/blue} and this is {bold}bold{/bold}.";
+var output = ansiMarkup(input);
+console.log(output);
 ```
 
-This example will output: 
+Run on the command line: 
 
 ```bash
-[ 
-  'a very very long string',
-  'full of words composed',
-  'entirely of ASCII chara-',
-  'cters.' 
-]
-```
-
-Notice the word 'characters' was split into 'chara-' + 'cters' to make each string as long as possible.
-
-If the desired string length is very short, any word larger than that length will be split apart:
-
-```JavaScript
-var asciiStringSplit = require('ascii-string-split');
-
-var myString = 'a few words';
-var strLength = 2;
-
-console.log(asciiStringSplit(myString, strLength));
-```
-
-This example will output: 
-
-```bash
-[ 
-  'a', 
-  'f-', 
-  'ew', 
-  'w-', 
-  'o-', 
-  'r-', 
-  'ds' 
-]
-```
-
-### Avoiding Word Splitting 
-
-You can suppress word splitting for all words, or only specific words. This allows you to keep URLs, proper names, variable names, etc, from being broken up when they really shouldn't be.
-
-```JavaScript
-var asciiStringSplit = require('ascii-string-split');
-
-var myString = 'a very very long string full of words composed entirely of ASCII characters.';
-var strLength = 21;
-var options = {splitWords: false}; 
-
-console.log(asciiStringSplit(myString, strLength, options));
+$ node sample.js
 ```
 
 This example will output:
 
-```bash
-[ 
-  'a very very long string',
-  'full of words composed',
-  'entirely of ASCII',
-  'characters.' 
-]
-```
+> ![formatted text](./media/formatted-text.png) 
 
-Notice that 'characters' was *not* split into chunks, instead it starts the next string.
 
-If we use the ```preservedWords``` option, the words it contains will never be split, even if ```splitWords = true```.
-
-```JavaScript
-var asciiStringSplit = require('ascii-string-split');
-
-var myString = 'a few words';
-var strLength = 2;
-var options = {preservedWords: ['few']};
-
-console.log(asciiStringSplit(myString, strLength, options));
-```
-
-This example will output: 
+If you redirect output to a pipe or file, the markup tags will simply be stripped from the output: 
 
 ```bash
-[ 
-  'a', 
-  'few', 
-  'w-', 
-  'o-', 
-  'r-', 
-  'ds' 
-]
+$ node sample.js > foo.txt  
 ```
 
-Notice that 'few' did not get split apart, but 'words' did split. 
+The contents of foo.txt will be unformatted: 
+
+> this text is blue and this is bold.
 
 
-## API Reference 
+You can however force the codes to be rendered by using `forceRender=true`:
 
-### Basics
+```javascript
+# sample.js
 
-The library exports one method, which accepts three parameters:
+var ansiMarkup = require('ansi-markup');
+var input = "this text is {blue}blue{/blue} and this is {bold}bold{/bold}.";
+var options = {forceRender: true};
+var output = ansiMarkup(input, options);
+console.log(output);
+```
 
-| Param | Values | Description |
-| ----- | ------- | ------ |
-| **asciiString** | Any length of ASCII string  | The string that should be split into smaller strings. Note that the library won't split multi-byte strings nicely, but it will split lots of non-ASCII characters just fine. |
-| **strLength**   | Any integer greater than 2 | The maximum length, in characters, that the smaller strings should be. The length must be at least 2 because the smallest split string is 1 character plus a hyphen! |
-| **options**   | An object | An optional object containing options. See the **options** table below for details. |
+```bash
+$ node sample.js > foo.txt  
+```
 
-### Options
+The contents of foo.txt will now be: 
 
-| Option | Values | Description |
-| ----- | ------- | ------ |
-| **splitWords** | A boolean  | When ```true```, words may be split into chunks so that strings are as long as possible. See **How Word Splitting Works** for details. Default is true. |
-| **preservedWords**   | An array of words. | Each 'word' is a string of characters, and cannot contain any whitespace. When they fully match a word in the source string, no splitting will occur, even if ```splitWords = true```. This is useful for URLs, proper names and variable names that would get garbled if they were split apart. *Hint*: If your words in this array are still getting split, check your original string to see if they have punctuation attached. Eg: to match 'splittable' inside 'this word is splittable.', you need to append a '.' to match correctly.  |
-
-The return value is always an array. Illegal values throw an error.
-
-
-### How String Splitting Works
-
-* The library splits your source string across normal whitespace: line breaks, spaces and tabs. Each resulting non-whitespace string is considered a 'word'. Notice that these are not dictionary words, but rather any contiguous set of non-whitespace characters. This means that punctuation, etc, will be included in words. 
-* The library copies these words one at a time to a new string, until:
-    * The new string is filled, OR
-    * The original string has no more words to copy.
-* If the new string is already filled, then another new string is started.
-* If a word won't fit inside the new string, then it tries to split it, so that at least part of the word will fit. 
-    * A hyphen is added to the first part, so that it is clear that the word has been split.
-    * Small words aren't normally split, just big ones. See **How Word Splitting Works** for an explanation.
-    * You can avoid word splitting altogether by using either ```splitWords = true``` or ```preservedWords``` options.
+> ![formatted text](./media/formatted-text.png) 
 
 
-### How Word Splitting Works
+## Options
 
-There are two reasons for splitting a word:
+| Option | Value | Description |
+| ----- | ----- | ------- | 
+| forceRender | boolean. default false | forces tags to be converted to ANSI SGR codes. tags are replaced with ANSI SGR codes when the code is run in a TTY context; eg, output is direct to screen. however, tags are simply removed when the code is not run in a TTY context; eg, output is redirected to file, or piped to another process. setting `forceRender = true` will force all tags to be converted to ANSI SGR codes. |
 
-* **The word is pretty long, and can be split into smaller *readable* chunks**
-    * This only applies to words that are **at least 6 characters long**, so that at least 3 characters are left in each half of the split string. The resulting strings will be readable, even if the split is not at a natural location like the end of a syllable.
-* **The word, all by itself, is longer than the strLength parameter**
-    * When this occurs, there is no choice but to split the word, unless word splitting is disabled. The library will start a new string with the word, and split it at ```strLength```, minus one character so that a hyphen can be added at the end. 
-    * This behaviour only really matters when max-length is very small, or words are very large. For example:
-    ```JavaScript
-    asciiStringSplit("word", 2); // returns: ['w-', 'o-', 'rd']
-    ```
-    This example also shows why ```strlength``` must be at least 2 characters, because the smallest split string is 1 character plus a hyphen!
+
+## Markup
+
+The markup is designed to be easy to use. 
+
+##### How it works:
+
+* Markup tags are used in pairs. An opening tag and a closing tag. Text in between tags will have the style described by the tag.
+* Tags can be nested or overlapped, no problem.
+* Closing tags are not required. If omitted, a closing tag is implicitly added to the end of the string.
+* Closing tags with no matching opening tag have no effect and are simply removed.
+* Double the leading '{' to escape any markup tag. A side effect of this is that every double '{{' in the input will be replaced with a single '{'!.
+
+
+##### Fancy Text 
+
+|  Tag | Description |
+| ----- | ------- | 
+| {bold}{/bold} | makes the enclosed text bold |
+| {underline}{/underline} | underlines the enclosed text |
+| {blink}{/blink} | makes the enclosed text blink. super annoying and effective | 
+
+##### Text Color
+
+|  Tag | Description |
+| ----- | ------- | 
+| {black}{/black} | sets the foreground color of enclosed text to black |
+| {red}{/red} | sets the foreground color of enclosed text to red |
+| {green}{/green} | sets the foreground color of enclosed text to greeen |
+| {yellow}{/yellow} | sets the foreground color of enclosed text to yellow |
+| {blue}{/blue} | sets the foreground color of enclosed text to blue |
+| {magenta}{/magenta} | sets the foreground color of enclosed text to magenta |
+| {cyan}{/cyan} | sets the foreground color of enclosed text to cyan |
+| {white}{/white} | sets the foreground color of enclosed text to white |
+| {grey}{/grey}   | sets the foreground color of enclosed text to grey. Alternate spelling {gray}{/gray} works too. |
+| {default}{/default} | sets the foreground color of enclosed text to default terminal foreground color |
+
+##### Background Color
+
+|  Tag | Description |
+| ----- | ------- | 
+| {bgblack}{/bgblack} | sets the background color of enclosed text to black |
+| {bgred}{/bgred} | sets the background color of enclosed text to red |
+| {bggreen}{/bggreen} | sets the background color of enclosed text to green |
+| {bgyellow}{/bgyellow} | sets the background color of enclosed text to yellow |
+| {bgblue}{/bgblue} | sets the background color of enclosed text to blue |
+| {bgmagenta}{/bgmagenta} | sets the background color of enclosed text to magenta |
+| {bgcyan}{/bgcyan} | sets the background color of enclosed text to cyan |
+| {bgwhite}{/bgwhite} | sets the background color of enclosed text to white |
+| {bgdefault}{/bgdefault} | sets the background color of enclosed text to the default terminal background color |
+
+##### Specials
+
+|  Tag | Description |
+| ----- | ------- | 
+|  {inverse}{/inverse} | swaps the current foreground and background color of the enclosed text |
+|  {reset}{/reset} | resets **all** styles of the encosed text to their default values |
 
 
 ## Tests
@@ -186,8 +151,8 @@ There are two reasons for splitting a word:
 Tests are run automatically using Travis CI, but you can run them yourself quite easily.
 
 ```bash
-$ git clone https://github.com/tcowley/ascii-string-split
-$ cd ascii-string-split
+$ git clone https://github.com/tcowley/ansi-markup
+$ cd ansi-markup
 $ npm install
 $ npm test
 

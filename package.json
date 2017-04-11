@@ -1,7 +1,7 @@
 {
-  "name": "ansi-marks",
+  "name": "ansi-markup",
   "version": "0.0.1",
-  "description": "two way conversion between human friendly text formatting marks and ansi escape codes",
+  "description": "Convert easy to read text formatting marks to ansi escape codes",
   "author": "Trevor Cowley tcowley@gmail.com",
   "license": "ISC",
   "main": "index.js",
@@ -11,9 +11,9 @@
     "version": "",
     "postversion": "git push && git push --tags"
   },
-  "repository": "tcowley/ansi-marks",
+  "repository": "tcowley/ansi-markup",
   "bugs": {
-    "url": "https://github.com/tcowley/ansi-marks/issues"
+    "url": "https://github.com/tcowley/ansi-markup/issues"
   },
   "keywords": [
     "cli",
@@ -29,5 +29,6 @@
     "tap-min": "^1.0.0",
     "tape": "^4.0.3",
     "tape-catch": "^1.0.4"
-  }
+  },
+  "dependencies": {}
 }
