@@ -1,6 +1,6 @@
 {
   "name": "ansi-markup",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Convert easy to read text formatting marks to ansi escape codes",
   "author": "Trevor Cowley tcowley@gmail.com",
   "license": "ISC",
