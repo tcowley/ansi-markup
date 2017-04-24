@@ -3,7 +3,7 @@ var ansiMarkup = require('../index.js');
 var sampleData = require('../sample-data.js');
 
 
-test.only('test ansiMarkup(input, options)', function (t) {
+test('test ansiMarkup(input, options)', function (t) {
     var input;
     var options = ansiMarkup.normalizeOptions();
     var helperData = ansiMarkup.generateHelperData(options);
@@ -12,14 +12,10 @@ test.only('test ansiMarkup(input, options)', function (t) {
     var tags;
     var largeString = allTags.join('text');
     for(var i =0; i < 10; i++) largeString += largeString;
-    //console.log(largeString.length); t.end();
 
     // large data sets
     t.doesNotThrow(function() { ansiMarkup(largeString, leftDelimiter, allTags); }, 'input must be a string');
-    
-
     t.end();
-
 });
 
 
