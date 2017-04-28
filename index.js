@@ -90,12 +90,13 @@ function parseInput(input, leftDelimiter, allTags) {
         + ')', 'gi');
     input
         .split(leftDelimiter + leftDelimiter)
-        .map(function(str) { return str.split(tagsRe); })
+        .map(function(str) { tagsRe.lastIndex = 0; return str.split(tagsRe); })
         .forEach(function(arr,i) {
             arr.forEach(function(str,j) {
                 // push all found tags onto the tags array, 
                 // and place a non-string placeholder in the main string array
                 if (tagsRe.test(str)) {
+                    tagsRe.lastIndex = 0;
                     parsed.tags.push(str);
                     parsed.content.push(null);
                 }
