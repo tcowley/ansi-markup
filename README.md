@@ -1,4 +1,4 @@
-# ansi-markup  ![Build Status](https://travis-ci.org/tcowley/ansi-markup.svg?branch=master)
+# ansi-markup  [![Build Status](https://travis-ci.org/tcowley/ansi-markup.svg?branch=master)](https://travis-ci.org/tcowley/ansi-markup)
 
 ## Description
 
